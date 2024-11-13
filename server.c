@@ -30,7 +30,7 @@ int main(void) {
     socklen_t client_addr_length = sizeof(client_addr);
 
     server_addr.sin_family = AF_INET; // IPv4
-    server_addr.sin_addr.s_addr = INADDR_ANY; // Any address
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // localhost
     server_addr.sin_port = htons(8080); // Port 8080
 
     // Bind the socket to the server address
@@ -54,14 +54,16 @@ int main(void) {
             PRINT_ERROR("Failed to accept connection");
         }
 
+        // Block until data is sent from the client, and then read it
         char buffer[BUFFER_SIZE];
-        int bytes_read = read(socket_fd, buffer, sizeof(buffer));
+        int bytes_read = read(client_fd, buffer, sizeof(buffer));
         if (bytes_read > 0) {
-            for (size_t i = 0; i < BUFFER_SIZE; i++) {
+            for (size_t i = 0; i < bytes_read; i++) {
                 putchar(buffer[i]);
             }
         }
 
+        // Close the connection to the client
         close(client_fd);
     }
 
